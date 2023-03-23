@@ -4,6 +4,7 @@
   "name": "draw_text_with_effects",
   "resources": [
     {"id":{"name":"obj_draw_text_with_effects","path":"objects/obj_draw_text_with_effects/obj_draw_text_with_effects.yy",},"order":0,},
+    {"id":{"name":"draw_text_with_effects","path":"scripts/draw_text_with_effects/draw_text_with_effects.yy",},"order":0,},
     {"id":{"name":"Room1","path":"rooms/Room1/Room1.yy",},"order":0,},
   ],
   "Options": [

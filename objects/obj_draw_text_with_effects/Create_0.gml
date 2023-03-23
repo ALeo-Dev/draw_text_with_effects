@@ -1,0 +1,1 @@
+get_string_effects("{"+__COL+"c_green}");
