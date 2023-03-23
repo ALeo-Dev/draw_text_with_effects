@@ -1,1 +1,1 @@
-get_string_effects("{"+__COL+"c_green}");
+get_string_effects("{col_00FFFF}Esse texto é ciano");
