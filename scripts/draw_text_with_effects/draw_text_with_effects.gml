@@ -61,7 +61,7 @@ function get_string_effects(){
 		__array[_TEXTS_EFFECTS.FNT]=-1;
 		__array[_TEXTS_EFFECTS.HAL]=fa_left;
 		__array[_TEXTS_EFFECTS.VAL]=fa_top;
-		__array[_TEXTS_EFFECTS.ROT]=false;
+		__array[_TEXTS_EFFECTS.ROT]=0;
 		return __array;
 	}
 	var _array_output = [];
@@ -107,7 +107,7 @@ function get_string_effects(){
 										if (_effect == "middle") _array[_TEXTS_EFFECTS.VAL] = fa_middle;
 										if (_effect == "top") _array[_TEXTS_EFFECTS.VAL] = fa_top;
 									break;
-									case __ROT: _array[_TEXTS_EFFECTS.ROT] = true break;
+									case __ROT: _array[_TEXTS_EFFECTS.ROT] = real(_effect) break;
 								}
 							}
 						}
@@ -133,9 +133,7 @@ function draw_text_with_effects(){
 	for (var i = 0; i < array_length(_array); i++){
 		var _rot = 0;
 		var _ang = _array[i][_TEXTS_EFFECTS.ANG];
-		if (_array[i][_TEXTS_EFFECTS.ROT]){
-			_rot = (get_timer() / 1000000*.25 % 1) * 360;
-		}
+		_rot = (get_timer() / 1000000*_array[i][_TEXTS_EFFECTS.ROT] % 1) * 360;
 		
 		draw_set_color(_array[i][_TEXTS_EFFECTS.COL]);
 		draw_set_font(_array[i][_TEXTS_EFFECTS.FNT]);
@@ -143,9 +141,10 @@ function draw_text_with_effects(){
 		draw_set_valign(_array[i][_TEXTS_EFFECTS.VAL]);
 		draw_text_transformed(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot);
 		_x += string_width(_array[i][_TEXTS_EFFECTS.TXT]);
-		draw_set_halign(fa_left);
-		draw_set_valign(fa_top);
-		draw_set_color(c_white);
-		draw_set_font(-1);
 	}
+	
+	draw_set_halign(fa_left);
+	draw_set_valign(fa_top);
+	draw_set_color(c_white);
+	draw_set_font(-1);
 }
