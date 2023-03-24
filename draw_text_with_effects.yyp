@@ -3,6 +3,7 @@
   "resourceVersion": "1.6",
   "name": "draw_text_with_effects",
   "resources": [
+    {"id":{"name":"fnt_stencil","path":"fonts/fnt_stencil/fnt_stencil.yy",},"order":0,},
     {"id":{"name":"obj_draw_text_with_effects","path":"objects/obj_draw_text_with_effects/obj_draw_text_with_effects.yy",},"order":0,},
     {"id":{"name":"draw_text_with_effects","path":"scripts/draw_text_with_effects/draw_text_with_effects.yy",},"order":0,},
     {"id":{"name":"spr_teste","path":"sprites/spr_teste/spr_teste.yy",},"order":0,},
@@ -24,7 +25,7 @@
   ],
   "Folders": [
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Animation Curves","folderPath":"folders/Animation Curves.yy","order":12,},
-    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Extensions","folderPath":"folders/Extensions.yy","order":14,},
+    {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Extensions","folderPath":"folders/Animation Curves/Extensions.yy","order":0,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Fonts","folderPath":"folders/Fonts.yy","order":7,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Notes","folderPath":"folders/Notes.yy","order":13,},
     {"resourceType":"GMFolder","resourceVersion":"1.0","name":"Objects","folderPath":"folders/Objects.yy","order":9,},
