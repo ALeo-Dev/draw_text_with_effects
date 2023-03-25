@@ -7,7 +7,10 @@ enum _TEXTS_EFFECTS {
 	HAL,
 	ROT,
 	CL4,
-	VAL
+	WAV,
+	ANI,
+	VAL,
+	SCR
 }
 #macro __COL "col_" // cor
 #macro __FNT "fnt_" // fonte
@@ -16,6 +19,9 @@ enum _TEXTS_EFFECTS {
 #macro __VAL "val_" // valign
 #macro __ROT "rot_" // rotação
 #macro __CL4 "cl4_" // 4 cores no texto
+#macro __WAV "wav_" // letras dançando
+#macro __ANI "ani_" // texto com animação
+#macro __SCR "scr_" // Scream / Grito
 #endregion
 
 ///@func hex
@@ -65,6 +71,9 @@ function get_string_effects(){
 		__array[_TEXTS_EFFECTS.VAL]=fa_top;
 		__array[_TEXTS_EFFECTS.ROT]=0;
 		__array[_TEXTS_EFFECTS.CL4]=noone;
+		__array[_TEXTS_EFFECTS.WAV]=0;
+		__array[_TEXTS_EFFECTS.ANI]=false;
+		__array[_TEXTS_EFFECTS.SCR]=0;
 		return __array;
 	}
 	var _array_output = [];
@@ -118,6 +127,9 @@ function get_string_effects(){
 										}
 										_array[_TEXTS_EFFECTS.CL4] = _array_colors;
 									break;
+									case __WAV: _array[_TEXTS_EFFECTS.WAV] = real(_effect) break;
+									case __ANI: _array[_TEXTS_EFFECTS.ANI] = true break;
+									case __SCR: _array[_TEXTS_EFFECTS.SCR] = real(_effect) break;
 								}
 							}
 						}
@@ -136,10 +148,13 @@ function get_string_effects(){
 ///@arg array_from_get_string_effects
 ///@arg x
 ///@arg y
+///@arg max_width
 function draw_text_with_effects(){
 	var _array = argument0;
 	var _x = argument1;
 	var _y = argument2;
+	var _max_width = argument3;
+	
 	for (var i = 0; i < array_length(_array); i++){
 		var _rot = 0;
 		var _ang = _array[i][_TEXTS_EFFECTS.ANG];
@@ -149,13 +164,52 @@ function draw_text_with_effects(){
 		draw_set_font(_array[i][_TEXTS_EFFECTS.FNT]);
 		draw_set_halign(_array[i][_TEXTS_EFFECTS.HAL]);
 		draw_set_valign(_array[i][_TEXTS_EFFECTS.VAL]);
-		if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
-			draw_text_transformed(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot);
+		
+		if (!_array[i][_TEXTS_EFFECTS.ANI]){
+			if (_x + string_width(_array[i][_TEXTS_EFFECTS.TXT]) > _max_width){
+				_x = argument1;
+				_y += string_height(_array[i][_TEXTS_EFFECTS.TXT]);
+			}
+			
+			if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
+				draw_text_transformed(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot);
+			}else{
+				var _colors = _array[i][_TEXTS_EFFECTS.CL4];
+				draw_text_transformed_color(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+			}
+			_x += string_width(_array[i][_TEXTS_EFFECTS.TXT]);
 		}else{
-			var _colors = _array[i][_TEXTS_EFFECTS.CL4];
-			draw_text_transformed_color(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+			var _anim_string_len = string_length(_array[i][_TEXTS_EFFECTS.TXT]);
+			for (var j = 1; j < _anim_string_len+1; j++){
+				var _string = string_char_at(_array[i][_TEXTS_EFFECTS.TXT],j);
+				var _xadd = 0;
+				var _yadd = 0;
+				
+				if (_x + string_width(_string) > _max_width){
+					_x = argument1;
+					_y += string_height(_string);
+				}
+				
+				if (_array[i][_TEXTS_EFFECTS.WAV]>0){
+					_yadd += dsin(get_timer()/10000+j*_array[i][_TEXTS_EFFECTS.WAV]) *_array[i][_TEXTS_EFFECTS.WAV];
+				}
+				
+				if (_array[i][_TEXTS_EFFECTS.SCR]>0){
+					_xadd += dcos(random(360)) * _array[i][_TEXTS_EFFECTS.SCR];
+					_yadd += dsin(random(360)) * _array[i][_TEXTS_EFFECTS.SCR];
+				}
+				
+				
+				if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
+					draw_text_transformed(_x+_xadd,_y+_yadd,_string,1,1,_ang+_rot);
+				}else{
+					var _colors = _array[i][_TEXTS_EFFECTS.CL4];
+					draw_text_transformed_color(_x+_xadd,_y+_yadd,_string,1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+				}
+				
+				_x += string_width(_string);
+			}
 		}
-		_x += string_width(_array[i][_TEXTS_EFFECTS.TXT]);
 	}
 	
 	draw_set_halign(fa_left);
