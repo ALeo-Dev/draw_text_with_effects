@@ -6,6 +6,7 @@ enum _TEXTS_EFFECTS {
 	ANG,
 	HAL,
 	ROT,
+	CL4,
 	VAL
 }
 #macro __COL "col_" // cor
@@ -14,6 +15,7 @@ enum _TEXTS_EFFECTS {
 #macro __HAL "hal_" // halign
 #macro __VAL "val_" // valign
 #macro __ROT "rot_" // rotação
+#macro __CL4 "cl4_" // 4 cores no texto
 #endregion
 
 ///@func hex
@@ -62,6 +64,7 @@ function get_string_effects(){
 		__array[_TEXTS_EFFECTS.HAL]=fa_left;
 		__array[_TEXTS_EFFECTS.VAL]=fa_top;
 		__array[_TEXTS_EFFECTS.ROT]=0;
+		__array[_TEXTS_EFFECTS.CL4]=noone;
 		return __array;
 	}
 	var _array_output = [];
@@ -78,7 +81,7 @@ function get_string_effects(){
 			for (var j = 1; j <= _string_len; j++){
 				var _char_command_at = string_char_at(_string,i+j);
 				_qnt_chars++;
-				if (_char_command_at == ",") or (_char_command_at == "}"){
+				if (_char_command_at == "#") or (_char_command_at == "}"){
 					array_push(_array_effects,string_copy(_string,_copy_from, _qnt_chars-1));
 					_copy_from=i+j+1;
 					_qnt_chars = 0;
@@ -108,6 +111,13 @@ function get_string_effects(){
 										if (_effect == "top") _array[_TEXTS_EFFECTS.VAL] = fa_top;
 									break;
 									case __ROT: _array[_TEXTS_EFFECTS.ROT] = real(_effect) break;
+									case __CL4:
+										var _array_colors = [];
+										for (var l = 0; l < 4; l++){
+											array_push(_array_colors,hex(string_copy(_effect,1+l*6,6)));
+										}
+										_array[_TEXTS_EFFECTS.CL4] = _array_colors;
+									break;
 								}
 							}
 						}
@@ -139,7 +149,12 @@ function draw_text_with_effects(){
 		draw_set_font(_array[i][_TEXTS_EFFECTS.FNT]);
 		draw_set_halign(_array[i][_TEXTS_EFFECTS.HAL]);
 		draw_set_valign(_array[i][_TEXTS_EFFECTS.VAL]);
-		draw_text_transformed(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot);
+		if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
+			draw_text_transformed(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot);
+		}else{
+			var _colors = _array[i][_TEXTS_EFFECTS.CL4];
+			draw_text_transformed_color(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+		}
 		_x += string_width(_array[i][_TEXTS_EFFECTS.TXT]);
 	}
 	

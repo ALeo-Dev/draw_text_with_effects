@@ -1,2 +1,4 @@
-var _string = "{col_F8941D,rot_1,hal_center,val_middle,ciranda}{col_0000FF,cirandinha vamos todos         }{col_F8941D,rot_.5,hal_center,val_middle,cirandar}"
-text1 = get_string_effects(_string);
+var _string = "{fnt_fnt_stencil#cl4_16537e16537ef1c232f1c232#As principais cores do Brasil são o verde, amarelo e azul\nEntendeu?}"
+texto = get_string_effects(_string);
+
+show_debug_overlay(true);
