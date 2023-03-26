@@ -1,2 +1,1 @@
-var _maxwidth = room_width
-draw_text_with_effects(text,0,20,_maxwidth);
+draw_text_with_effects(text,mouse_x,mouse_y-40);

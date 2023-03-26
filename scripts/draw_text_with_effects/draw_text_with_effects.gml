@@ -152,12 +152,10 @@ function get_string_effects(){
 ///@arg array_from_get_string_effects
 ///@arg x
 ///@arg y
-///@arg max_width
 function draw_text_with_effects(){
 	var _array = argument0;
 	var _x = argument1;
 	var _y = argument2;
-	var _max_width = argument3;
 	
 	for (var i = 0; i < array_length(_array); i++){
 		var _rot = 0;
@@ -171,52 +169,65 @@ function draw_text_with_effects(){
 			draw_set_halign(_array[i][_TEXTS_EFFECTS.HAL]);
 			draw_set_valign(_array[i][_TEXTS_EFFECTS.VAL]);
 		
-			if (!_array[i][_TEXTS_EFFECTS.ANI]){
-				if (_x + string_width(_array[i][_TEXTS_EFFECTS.TXT]) > _max_width){
-					_x = argument1;
-					_y += string_height(_array[i][_TEXTS_EFFECTS.TXT]);
+			if (!_array[i][_TEXTS_EFFECTS.ANI]){ // se o texto não tem animação
+				var _string_len = string_length(_array[i][_TEXTS_EFFECTS.TXT]);
+				var _draw_pos = 1;
+				for (var j = 0; j < _string_len+1; j++){
+					var _string_draw = string_copy(_array[i][_TEXTS_EFFECTS.TXT],_draw_pos,j-_draw_pos);
+					var _string = string_char_at(_array[i][_TEXTS_EFFECTS.TXT],j);
+					if (j == _string_len){
+						var _string_draw = string_copy(_array[i][_TEXTS_EFFECTS.TXT],_draw_pos,j-_draw_pos+1);
+						if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
+							draw_text_transformed(_x,_y,_string_draw,1,1,_ang+_rot);
+						}else{
+							var _colors = _array[i][_TEXTS_EFFECTS.CL4];
+							draw_text_transformed_color(_x,_y,_string_draw,1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+						}
+						_x += string_width(_string_draw);
+					}else{
+						if (_string == "☺"){
+							if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
+								draw_text_transformed(_x,_y,_string_draw,1,1,_ang+_rot);
+							}else{
+								var _colors = _array[i][_TEXTS_EFFECTS.CL4];
+								draw_text_transformed_color(_x,_y,_string_draw,1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+							}
+							_x = argument1;
+							_y += string_height(_string_draw);
+							_draw_pos = j+1;
+						}
+					}
 				}
-						
-				if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
-					draw_text_transformed(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot);
-				}else{
-					var _colors = _array[i][_TEXTS_EFFECTS.CL4];
-					draw_text_transformed_color(_x,_y,_array[i][_TEXTS_EFFECTS.TXT],1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
-				}
-			
-				_x += string_width(_array[i][_TEXTS_EFFECTS.TXT]);
-			
-			}else{
-			
+			}else{ // texto com animações
 				var _anim_string_len = string_length(_array[i][_TEXTS_EFFECTS.TXT]);
 				for (var j = 1; j < _anim_string_len+1; j++){
 					var _string = string_char_at(_array[i][_TEXTS_EFFECTS.TXT],j);
 					var _xadd = 0;
 					var _yadd = 0;
 				
-					if (_x + string_width(_string) > _max_width){
+					if (_string == "☺"){
 						_x = argument1;
 						_y += string_height(_string);
-					}
-				
-					if (_array[i][_TEXTS_EFFECTS.WAV]>0){
-						_yadd += dsin(get_timer()/10000+j*30) *_array[i][_TEXTS_EFFECTS.WAV];
-					}
-				
-					if (_array[i][_TEXTS_EFFECTS.SCR]>0){
-						_xadd += dcos(random(360)) * _array[i][_TEXTS_EFFECTS.SCR];
-						_yadd += dsin(random(360)) * _array[i][_TEXTS_EFFECTS.SCR];
-					}
-				
-				
-					if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
-						draw_text_transformed(_x+_xadd,_y+_yadd,_string,1,1,_ang+_rot);
 					}else{
-						var _colors = _array[i][_TEXTS_EFFECTS.CL4];
-						draw_text_transformed_color(_x+_xadd,_y+_yadd,_string,1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
-					}
+						if (_array[i][_TEXTS_EFFECTS.WAV]>0) { // configurando a wave
+							_yadd += dsin(get_timer()/7000+j*45) *_array[i][_TEXTS_EFFECTS.WAV];
+						}
 				
-					_x += string_width(_string);
+						if (_array[i][_TEXTS_EFFECTS.SCR]>0){ // configurando o grito
+							_xadd += dcos(random(360)) * _array[i][_TEXTS_EFFECTS.SCR];
+							_yadd += dsin(random(360)) * _array[i][_TEXTS_EFFECTS.SCR];
+						}
+				
+				
+						if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
+							draw_text_transformed(_x+_xadd,_y+_yadd,_string,1,1,_ang+_rot);
+						}else{
+							var _colors = _array[i][_TEXTS_EFFECTS.CL4];
+							draw_text_transformed_color(_x+_xadd,_y+_yadd,_string,1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+						}
+				
+						_x += string_width(_string);
+					}
 				}
 			}
 		}else{
