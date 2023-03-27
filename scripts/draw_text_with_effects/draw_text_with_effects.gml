@@ -9,7 +9,14 @@ enum _TEXTS_EFFECTS {
 	WAV,
 	ANI,
 	SCR,
-	SPR
+	SPR,
+	ALP,
+	GHT,
+	BLD,
+	XSC,
+	YSC,
+	XSI,
+	YSI
 }
 #macro __COL "col_" // cor
 #macro __FNT "fnt_" // fonte
@@ -20,6 +27,13 @@ enum _TEXTS_EFFECTS {
 #macro __ANI "ani_" // texto com animação
 #macro __SCR "scr_" // Scream / Grito
 #macro __SPR "spr_" // sprite
+#macro __ALP "alp_" // alpha
+#macro __GHT "ght_" // Ghost
+#macro __BLD "bld_" // Ballad
+#macro __XSC "xsc_" // xscale
+#macro __YSC "ysc_" // yscale
+#macro __XSI "xsi_" // xscale increase
+#macro __YSI "ysi_" // yscale increase
 #endregion
 
 ///@func hex
@@ -72,6 +86,13 @@ function get_string_effects(){
 		__array[_TEXTS_EFFECTS.ANI]=false;
 		__array[_TEXTS_EFFECTS.SCR]=0;
 		__array[_TEXTS_EFFECTS.SPR]=noone;
+		__array[_TEXTS_EFFECTS.ALP]=1;
+		__array[_TEXTS_EFFECTS.GHT]=0;
+		__array[_TEXTS_EFFECTS.BLD]=0;
+		__array[_TEXTS_EFFECTS.XSC]=1;
+		__array[_TEXTS_EFFECTS.YSC]=1;
+		__array[_TEXTS_EFFECTS.YSI]=0;
+		__array[_TEXTS_EFFECTS.XSI]=0;
 		return __array;
 	}
 	var _array_output = [];
@@ -122,6 +143,13 @@ function get_string_effects(){
 					case __ANI: _array[_TEXTS_EFFECTS.ANI] = true break;
 					case __SCR: _array[_TEXTS_EFFECTS.SCR] = real(_effect) break;
 					case __SPR: _array[_TEXTS_EFFECTS.SPR] = asset_get_index(_effect) break;
+					case __ALP: _array[_TEXTS_EFFECTS.ALP] = real(_effect) break;
+					case __GHT: _array[_TEXTS_EFFECTS.GHT] = real(_effect) break;
+					case __BLD: _array[_TEXTS_EFFECTS.BLD] = real(_effect) break;
+					case __XSC: _array[_TEXTS_EFFECTS.XSC] = real(_effect) break;
+					case __YSC: _array[_TEXTS_EFFECTS.YSC] = real(_effect) break;
+					case __YSI: _array[_TEXTS_EFFECTS.YSI] = real(_effect) break;
+					case __XSI: _array[_TEXTS_EFFECTS.XSI] = real(_effect) break;
 				}
 			}
 			#endregion
@@ -149,7 +177,35 @@ function draw_text_with_effects(){
 		if (_spr == noone){
 			draw_set_color(_array[i][_TEXTS_EFFECTS.COL]);
 			draw_set_font(_array[i][_TEXTS_EFFECTS.FNT]);
-		
+			
+			if (_array[i][_TEXTS_EFFECTS.GHT]>0){
+				_alpha = abs(dsin((get_timer() / 1000000*_array[i][_TEXTS_EFFECTS.GHT] % 1)*360));
+			}else{
+				var _alpha = _array[i][_TEXTS_EFFECTS.ALP];
+			}
+			
+			if (_array[i][_TEXTS_EFFECTS.BLD]>0){
+				var _hue = get_timer() / 1000000*_array[i][_TEXTS_EFFECTS.BLD] % 1 *255;
+				_array[i][_TEXTS_EFFECTS.COL] = make_color_hsv(_hue,255,255);
+			}
+			
+			var _xscale = _array[i][_TEXTS_EFFECTS.XSC];
+			var _yscale = _array[i][_TEXTS_EFFECTS.YSC];			
+
+			if (_array[i][_TEXTS_EFFECTS.XSI]!=0){
+				var _channel = animcurve_get_channel(ac_draw_text_with_effects,"curve0to1");
+				var _pos = (get_timer() / 1000000 % 1);
+				_xscale+=animcurve_channel_evaluate(_channel,_pos)*_array[i][_TEXTS_EFFECTS.XSI];
+			}
+			
+			if (_array[i][_TEXTS_EFFECTS.YSI]!=0){
+				var _channel = animcurve_get_channel(ac_draw_text_with_effects,"curve0to1");
+				var _pos = (get_timer() / 1000000 % 1);
+				_yscale+=animcurve_channel_evaluate(_channel,_pos)*_array[i][_TEXTS_EFFECTS.YSI];
+			}
+			
+			draw_set_alpha(_alpha);
+			
 			if (!_array[i][_TEXTS_EFFECTS.ANI]){ // se o texto não tem animação
 				var _string_len = string_length(_array[i][_TEXTS_EFFECTS.TXT]);
 				var _draw_pos = 1;
@@ -159,22 +215,22 @@ function draw_text_with_effects(){
 					if (j == _string_len){
 						var _string_draw = string_copy(_array[i][_TEXTS_EFFECTS.TXT],_draw_pos,j-_draw_pos+1);
 						if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
-							draw_text_transformed(_x,_y,_string_draw,1,1,_ang+_rot);
+							draw_text_transformed(_x,_y,_string_draw,_xscale,_yscale,_ang+_rot);
 						}else{
 							var _colors = _array[i][_TEXTS_EFFECTS.CL4];
-							draw_text_transformed_color(_x,_y,_string_draw,1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+							draw_text_transformed_color(_x,_y,_string_draw,_xscale,_yscale,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],_alpha);
 						}
-						_x += string_width(_string_draw);
+						_x += string_width(_string_draw)*_xscale;
 					}else{
 						if (_string == "☺"){
 							if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
-								draw_text_transformed(_x,_y,_string_draw,1,1,_ang+_rot);
+								draw_text_transformed(_x,_y,_string_draw,_xscale,_yscale,_ang+_rot);
 							}else{
 								var _colors = _array[i][_TEXTS_EFFECTS.CL4];
-								draw_text_transformed_color(_x,_y,_string_draw,1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+								draw_text_transformed_color(_x,_y,_string_draw,_xscale,_yscale,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],_alpha);
 							}
 							_x = argument1;
-							_y += string_height(_string_draw);
+							_y += string_height(_string_draw)*_yscale;
 							_draw_pos = j+1;
 						}
 					}
@@ -188,7 +244,7 @@ function draw_text_with_effects(){
 				
 					if (_string == "☺"){
 						_x = argument1;
-						_y += string_height(_string);
+						_y += string_height(_string)*_yscale;
 					}else{
 						if (_array[i][_TEXTS_EFFECTS.WAV]>0) { // configurando a wave
 							_yadd += dsin(get_timer()/7000+j*45) *_array[i][_TEXTS_EFFECTS.WAV];
@@ -201,13 +257,13 @@ function draw_text_with_effects(){
 				
 				
 						if (_array[i][_TEXTS_EFFECTS.CL4]==noone){
-							draw_text_transformed(_x+_xadd,_y+_yadd,_string,1,1,_ang+_rot);
+							draw_text_transformed(_x+_xadd,_y+_yadd,_string,_xscale,_yscale,_ang+_rot);
 						}else{
 							var _colors = _array[i][_TEXTS_EFFECTS.CL4];
-							draw_text_transformed_color(_x+_xadd,_y+_yadd,_string,1,1,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],1);
+							draw_text_transformed_color(_x+_xadd,_y+_yadd,_string,_xscale,_yscale,_ang+_rot,_colors[0],_colors[1],_colors[2],_colors[3],_alpha);
 						}
 				
-						_x += string_width(_string);
+						_x += string_width(_string)*_xscale;
 					}
 				}
 			}
@@ -217,5 +273,6 @@ function draw_text_with_effects(){
 		}
 		draw_set_color(c_white);
 		draw_set_font(-1);
+		draw_set_alpha(1);
 	}
 }
